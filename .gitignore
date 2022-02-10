@@ -8,3 +8,4 @@ project.egg-info
 *.egg
 *.egg-info
 .env
+.rdb
