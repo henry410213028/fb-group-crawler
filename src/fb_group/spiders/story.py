@@ -25,6 +25,9 @@ class StorySpider(RedisSpider):
         comments = response.xpath(xpath).getall()
         if comments:
             return comments
+        # comment parent element
+        if response.xpath("//div[@data-sigil='m-mentions-expand']").get():
+            return []
         raise ValueError("Comment was not found in page")
 
     def parse_replies(self, response) -> list:

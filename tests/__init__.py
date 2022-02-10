@@ -9,6 +9,7 @@ TESTCASE_FILENAMES = [
     "reply_many.html",
     "reply_many_page.html",
     "reply_one.html",
+    "story_comment_none.html",
     "story_comment_many_page.html",
     "story_comment_one_page.html",
     "story_photo_only.html",

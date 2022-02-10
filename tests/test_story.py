@@ -54,6 +54,15 @@ class StoryParse:
         ),
         (
             {
+                "html": FILE_TESTCASE["story_comment_none.html"],
+                "string": "",
+                "n_comment": 0,
+                "n_reply_page": 0,
+                "with_next_page": False,
+            }
+        ),
+        (
+            {
                 "html": FILE_TESTCASE["story_photo_only.html"],
                 "string": "",
                 "n_comment": 1,
