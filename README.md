@@ -12,6 +12,8 @@ An example project that crawl all the posts and comments in facebook public grou
 
 * Python 3.7 environment
 
+* Docker (optional)
+
 ### Installing
 
 ```bash
@@ -24,7 +26,7 @@ pip install .
 
 ## Executing
 
-Crawler use redis as a job queue, you should start redis-server before crawler execution
+Crawler use redis as a job queue, you should start redis-server before crawler execution, if you don't have redis in local machine, refer to "Docker" section
 
 Program will stop until all of the posts and comments be collected, or press "Ctrl + c" to stop manually
 
@@ -55,6 +57,17 @@ cd src
 python -m fb_group.run GROUP_ID=xxx
 
 fb_group_crawler GROUP_ID=xxx
+```
+
+## Docker
+
+```bash
+# build docker image
+docker-compose build
+
+# start redis-server and crawler
+export GROUP_ID=xxx
+docker-compose up
 ```
 
 ## Running the tests

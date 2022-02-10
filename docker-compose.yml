@@ -1,0 +1,27 @@
+version: '3'
+services:
+
+  crawler:
+    image: py_fb_crawler
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    working_dir: /src
+    environment:
+      GROUP_ID: ${GROUP_ID}
+      REDIS_URL: 'redis://redis:6379'
+    volumes:
+      - ./data:/src/data
+    restart: 'no'
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:6.0.9-alpine
+    ports:
+      - 6379:6379
+    volumes:
+      - ./redis.conf:/etc/redis.conf
+      - ./data:/data
+    restart: 'no'
+    command: redis-server /etc/redis.conf
