@@ -1,4 +1,5 @@
-"""Crawler main entry point"""
+"""Crawler main entry point
+"""
 
 import sys
 from scrapy.settings import Settings
@@ -10,6 +11,8 @@ from fb_group.spiders.comment import CommentSpider
 
 
 def main():
+    """Main entry function, 
+    """
     print(sys.argv)
     kwargs = parse_args(sys.argv[1:])
     settings = Settings()

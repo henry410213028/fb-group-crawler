@@ -1,3 +1,5 @@
+"""Spider module for StorySpider
+"""
 import re
 from scrapy_redis.spiders import RedisSpider
 from bs4 import BeautifulSoup
@@ -8,19 +10,54 @@ from fb_group.spiders.comment import parse_data
 
 
 class StorySpider(RedisSpider):
+
+    """Scrapy spider class for download facebook group story (post) page
+    
+    Attributes:
+        allowed_domains (list): Url domain for facebook
+        name (str): Spider name
+    """
+    
     name = "story"
     allowed_domains = ["mobile.facebook.com"]
 
     def get_request_path(self, response) -> str:
+        """Return url without query string and trailing slash
+        
+        Args:
+            response (scrapy.http.response.Response): HTTP response object
+        
+        Returns:
+            str: Url without query string and trailing slash
+        """
         path = urlparse(response.request.url).path
         return re.sub(r"(.*)\/$", "\\1", path)
 
     def parse_content(self, response) -> str:
+        """Parsing function for story body
+        
+        Args:
+            response (scrapy.http.response.Response): HTTP response object
+        
+        Returns:
+            str: Story body
+        """
         xpath = "//div[@class='story_body_container']//header/following-sibling::div"
         content = "".join(response.xpath(xpath + "//text()").getall())
         return content
 
     def parse_comments(self, response) -> list:
+        """Parse comment elements in current story page
+        
+        Args:
+            response (scrapy.http.response.Response): HTTP response object
+        
+        Returns:
+            list: List of comment elements
+        
+        Raises:
+            ValueError: Description
+        """
         xpath = "//div[@data-sigil='comment']"
         comments = response.xpath(xpath).getall()
         if comments:
@@ -31,15 +68,39 @@ class StorySpider(RedisSpider):
         raise ValueError("Comment was not found in page")
 
     def parse_replies(self, response) -> list:
+        """Parse all reply urls in current story page
+        
+        Args:
+            response (scrapy.http.response.Response): HTTP response object
+        
+        Returns:
+            list: List of story elements
+        """
         xpath = "//div[@data-sigil='replies-see-more']//a/@href"
         replies = response.xpath(xpath).getall()
         return [x for x in replies if x.startswith("/comment/replies/")]
 
     def parse_next_page(self, response) -> str:
+        """Parse pagination url
+        
+        Args:
+            response (scrapy.http.response.Response): HTTP response object
+        
+        Returns:
+            str: Url that paginate to following item page
+        """
         xpath = "//div[contains(@id, 'see_prev_')]//a/@href"
         return response.xpath(xpath).get()
 
     def parse(self, response):
+        """Default parsing main function, set as request callback
+        
+        Args:
+            response (scrapy.http.response.Response): HTTP Response object
+        
+        Yields:
+            scrapy.item.Item: CommentItem
+        """
         items = []
         story_id = self.get_request_path(response).split("/")[-1]
 
