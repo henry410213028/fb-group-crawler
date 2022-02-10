@@ -51,7 +51,7 @@ class PageSpider(Spider):
         return publish_time
 
     def parse_data(self, soup) -> list:
-        count_pattern = re.compile(r"([\d,]+)\s*Likes?\s*([\d,]+)\s*[C|c]omments?.*")
+        count_pattern = re.compile(r"([\d,]+)\s*個讚\s*([\d,]+)\s*則留.*")
         count_text = (
             soup.find("div", class_="story_body_container")
             .find_next_sibling()
@@ -94,9 +94,6 @@ class PageSpider(Spider):
     @classmethod
     def from_crawler(cls, crawler, *args, **kwargs):
         settings = crawler.settings
-        spider = cls(
-            settings.get("group_id", ""),
-            **kwargs,
-        )
+        spider = cls(settings.get("group_id", ""), **kwargs,)
         spider._set_crawler(crawler)
         return spider

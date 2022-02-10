@@ -40,7 +40,7 @@ TELNETCONSOLE_ENABLED = False
 # Override the default request headers:
 DEFAULT_REQUEST_HEADERS = {
     "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-    "accept-language": "en",
+    "accept-language": "zh-TW,zh",
     "sec-ch-ua": '" Not;A Brand";v="99", "Google Chrome";v="97", "Chromium";v="97"',
     "sec-ch-ua-mobile": "?0",
     "sec-ch-ua-platform": '"macOS"',

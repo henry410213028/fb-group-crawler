@@ -6,7 +6,6 @@ logger = logging.getLogger(__name__)
 
 
 class JsonFilePipeline:
-
     def __init__(self, output_path):
         self.targ_basepath = output_path
         self.targ_basepath.mkdir(parents=True, exist_ok=True)

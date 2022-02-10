@@ -24,10 +24,7 @@ class CommentSpider(RedisSpider):
 
     def parse_next_page(self, response):
         xpath = "//div[contains(@id, 'comment_replies_more')]//a/@href"
-        next_page = response.xpath(xpath).get()
-        if next_page:  # startswith("/comment/replies/")
-            url = "https://" + self.allowed_domains[0] + next_page
-            url_enqueue(self.name, url)
+        return response.xpath(xpath).get()
 
     def parse(self, response):
         replies = self.parse_replies(response)
@@ -45,7 +42,10 @@ class CommentSpider(RedisSpider):
                     }
                 )
 
-        self.parse_next_page(response)
+        next_page = self.parse_next_page(response)
+        if next_page:  # startswith("/comment/replies/")
+            url = "https://" + self.allowed_domains[0] + next_page
+            url_enqueue(self.name, url)
 
 
 def parse_data(soup) -> list:

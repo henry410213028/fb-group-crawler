@@ -17,7 +17,7 @@ class StorySpider(RedisSpider):
 
     def parse_content(self, response) -> str:
         xpath = "//div[@class='story_body_container']//header/following-sibling::div"
-        content = " ".join(response.xpath(xpath + "//text()").getall())
+        content = "".join(response.xpath(xpath + "//text()").getall())
         return content
 
     def parse_comments(self, response) -> list:
@@ -27,18 +27,14 @@ class StorySpider(RedisSpider):
             return comments
         raise ValueError("Comment was not found in page")
 
-    def parse_reply(self, soup):
-        links = [x.get("href", "") for x in soup.find_all("a")]
-        reply = [x for x in links if x.startswith("/comment/replies/")]
-        if reply:
-            url = "https://" + self.allowed_domains[0] + reply[0]
-            url_enqueue("comment", url)
+    def parse_replies(self, response) -> list:
+        xpath = "//div[@data-sigil='replies-see-more']//a/@href"
+        replies = response.xpath(xpath).getall()
+        return [x for x in replies if x.startswith("/comment/replies/")]
 
-    def parse_next_page(self, response):
+    def parse_next_page(self, response) -> str:
         xpath = "//div[contains(@id, 'see_prev_')]//a/@href"
-        next_page = response.xpath(xpath).get()
-        if next_page:
-            url_enqueue(self.name, next_page)
+        return response.xpath(xpath).get()
 
     def parse(self, response):
         items = []
@@ -47,12 +43,7 @@ class StorySpider(RedisSpider):
         # Post content is only parse in first visited page, not following page
         if "?p=" not in response.request.url:
             items.append(
-                PostItem(
-                    {
-                        "ID": story_id,
-                        "CONTENT": self.parse_content(response),
-                    }
-                )
+                PostItem({"ID": story_id, "CONTENT": self.parse_content(response),})
             )
 
         comments = self.parse_comments(response)
@@ -60,7 +51,6 @@ class StorySpider(RedisSpider):
             soup = BeautifulSoup(comment, "lxml")
             comment_id = soup.find("div").get("id")
             if comment_id.isdigit():
-                self.parse_reply(soup)
                 data = parse_data(soup)
                 items.append(
                     CommentItem(
@@ -75,6 +65,14 @@ class StorySpider(RedisSpider):
             else:
                 self.logger.warning(f"Unexpected Comment ID: {comment_id}")
 
-        self.parse_next_page(response)
+        replies = self.parse_replies(response)
+        for reply in replies:
+            url = "https://" + self.allowed_domains[0] + reply
+            url_enqueue("comment", url)
+
+        next_page = self.parse_next_page(response)
+        if next_page:
+            url_enqueue(self.name, next_page)
+
         for item in items:
             yield item
