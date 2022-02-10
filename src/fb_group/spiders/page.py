@@ -94,6 +94,6 @@ class PageSpider(Spider):
     @classmethod
     def from_crawler(cls, crawler, *args, **kwargs):
         settings = crawler.settings
-        spider = cls(settings.get("group_id", ""), **kwargs,)
+        spider = cls(settings.get("GROUP_ID", ""), **kwargs,)
         spider._set_crawler(crawler)
         return spider

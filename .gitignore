@@ -1,11 +1,11 @@
 __pycache__/
 **/logs/
 **/data/
+**/build/
+**/dist/
 .pytest_cache/
 .DS_Store
-build
-project.egg-info
 *.egg
 *.egg-info
 .env
-.rdb
+*.rdb

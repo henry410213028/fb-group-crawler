@@ -1,9 +1,12 @@
-.PHONY: install test
+.PHONY: install run test
 
 default: test
 
 install:
-	pipenv install --dev --skip-lock
+	pip install .
+
+run:
+	PYTHONPATH=./src python -m fb_group.run
 
 test:
 	PYTHONPATH=./src pytest

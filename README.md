@@ -6,37 +6,56 @@ An example project that crawl all the posts and comments in facebook public grou
 
 ### Prerequisites
 
-Linux or Unix-like system
+* Linux or Unix-like system
 
-Redis Database
+* Redis Database
 
-Python 3.7 environment
+* Python 3.7 environment
 
 ### Installing
 
 ```bash
 # local machine
 pip install -r requirements.txt
+
+# or install as a package
+pip install .
 ```
 
 ## Executing
 
+Crawler use redis as a job queue, you should start redis-server before crawler execution
+
 Program will stop until all of the posts and comments be collected, or press "Ctrl + c" to stop manually
 
-Argument group_id "xxx" is a target facebook group id show in URL, for example 1260448967306807 in https://facebook.com/groups/1260448967306807
+GROUP_ID "xxx" is a target facebook group id show in URL, for example 1260448967306807 in https://facebook.com/groups/1260448967306807
+
+Data will be save as json file into "data" folder
 
 Notice that the group must be public
 
 ```bash
-# local machine
-export GROUP_ID=xxx
-python src/run.py
+cd src
 
-# local machine with argument
-python src/run.py group_id=xxx
+# create envrionment variable
+export GROUP_ID=xxx
+
+# start the program
+python -m fb_group.run
+
+# if install as a package, there is a shell command
+fb_group_crawler
 ```
 
-Data will be save into "data" folder
+GROUP_ID could also passed by command line argument
+
+```bash
+cd src
+
+python -m fb_group.run GROUP_ID=xxx
+
+fb_group_crawler GROUP_ID=xxx
+```
 
 ## Running the tests
 
@@ -51,7 +70,7 @@ make test
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+This project is licensed under the MIT License
 
 ## Acknowledgments
 
