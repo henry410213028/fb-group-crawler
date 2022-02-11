@@ -49,7 +49,7 @@ class StorySpider(RedisSpider):
         xpath = self.content_xpath_base + "//text()"
         return "".join(response.xpath(xpath).getall())
 
-    def parse_content_image(self, metadata) -> list:
+    def parse_content_image(self, response) -> list:
         """Parse image urls for current story
         
         Args:

@@ -12,9 +12,9 @@ class StoryParse:
         content = self.spider.parse_content(response)
         assert test_args["string"] in content
 
-    def parse_content_image(self, test_args):
+    def test_parse_content_image(self, test_args):
         response = create_response(test_args["html"])
-        iamges = self.spider.parse_content(response)
+        iamges = self.spider.parse_content_image(response)
         assert test_args["n_image"] == len(iamges)
 
     def test_parse_comments(self, test_args):
@@ -53,7 +53,7 @@ class StoryParse:
             {
                 "html": FILE_TESTCASE["story_comment_one_page.html"],
                 "string": "不要以蘿蔔糕上的條紋來分切",
-                "n_image": 2,
+                "n_image": 1,
                 "n_comment": 8,
                 "n_reply_page": 4,
                 "with_next_page": False,
@@ -83,7 +83,7 @@ class StoryParse:
             {
                 "html": FILE_TESTCASE["story_text_only.html"],
                 "string": "發現Epson除了較原稿顏色深些，其他畫質與原稿看起來幾乎無異。",
-                "n_image": 1,
+                "n_image": 0,
                 "n_comment": 8,
                 "n_reply_page": 6,
                 "with_next_page": False,
