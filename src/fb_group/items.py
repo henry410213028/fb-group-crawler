@@ -37,12 +37,14 @@ class PostItem(Item):
     """Story main content
     
     Attributes:
-        CONTENT (str): Story body
+        CONTENT (str): Story text body
         ID (str): Story ID
+        IMAGES (list): Story images
     """
     
     ID = Field()
     CONTENT = Field()
+    IMAGES = Field()
 
     def __repr__(self):
         """Customize item message

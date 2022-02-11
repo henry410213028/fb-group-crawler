@@ -15,11 +15,15 @@ class StorySpider(RedisSpider):
     
     Attributes:
         allowed_domains (list): Url domain for facebook
+        content_xpath_base (str): Xpath address that contain story text body and image urls
         name (str): Spider name
     """
-    
+
     name = "story"
     allowed_domains = ["mobile.facebook.com"]
+    content_xpath_base = (
+        "//div[@class='story_body_container']//header/following-sibling::div"
+    )
 
     def get_request_path(self, response) -> str:
         """Return url without query string and trailing slash
@@ -33,18 +37,29 @@ class StorySpider(RedisSpider):
         path = urlparse(response.request.url).path
         return re.sub(r"(.*)\/$", "\\1", path)
 
-    def parse_content(self, response) -> str:
-        """Parsing function for story body
+    def parse_content(self, response) -> list:
+        """Parse text body for current story
         
         Args:
             response (scrapy.http.response.Response): HTTP response object
         
         Returns:
-            str: Story body
+            list: Story text body
         """
-        xpath = "//div[@class='story_body_container']//header/following-sibling::div"
-        content = "".join(response.xpath(xpath + "//text()").getall())
-        return content
+        xpath = self.content_xpath_base + "//text()"
+        return "".join(response.xpath(xpath).getall())
+
+    def parse_content_image(self, metadata) -> list:
+        """Parse image urls for current story
+        
+        Args:
+            response (scrapy.http.response.Response): HTTP response object
+        
+        Returns:
+            list: Story image urls
+        """
+        xpath = self.content_xpath_base + "//img/@src"
+        return response.xpath(xpath).getall()
 
     def parse_comments(self, response) -> list:
         """Parse comment elements in current story page
@@ -107,7 +122,13 @@ class StorySpider(RedisSpider):
         # Post content is only parse in first visited page, not following page
         if "?p=" not in response.request.url:
             items.append(
-                PostItem({"ID": story_id, "CONTENT": self.parse_content(response),})
+                PostItem(
+                    {
+                        "ID": story_id,
+                        "CONTENT": self.parse_content(response),
+                        "IMAGES": self.parse_content_image(response),
+                    }
+                )
             )
 
         comments = self.parse_comments(response)
