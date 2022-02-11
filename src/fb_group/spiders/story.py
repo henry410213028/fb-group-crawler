@@ -1,6 +1,7 @@
 """Spider module for StorySpider
 """
 import re
+from typing import List
 from scrapy_redis.spiders import RedisSpider
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
@@ -12,7 +13,7 @@ from fb_group.spiders.comment import parse_data
 class StorySpider(RedisSpider):
 
     """Scrapy spider class for download facebook group story (post) page
-    
+
     Attributes:
         allowed_domains (list): Url domain for facebook
         content_xpath_base (str): Xpath address that contain story text body and image urls
@@ -27,10 +28,10 @@ class StorySpider(RedisSpider):
 
     def get_request_path(self, response) -> str:
         """Return url without query string and trailing slash
-        
+
         Args:
             response (scrapy.http.response.Response): HTTP response object
-        
+
         Returns:
             str: Url without query string and trailing slash
         """
@@ -39,37 +40,47 @@ class StorySpider(RedisSpider):
 
     def parse_content(self, response) -> list:
         """Parse text body for current story
-        
+
         Args:
             response (scrapy.http.response.Response): HTTP response object
-        
+
         Returns:
             list: Story text body
         """
         xpath = self.content_xpath_base + "//text()"
         return "".join(response.xpath(xpath).getall())
 
-    def parse_content_image(self, response) -> list:
+    def parse_content_image(self, response) -> List[int]:
         """Parse image urls for current story
-        
+
         Args:
             response (scrapy.http.response.Response): HTTP response object
-        
+
         Returns:
             list: Story image urls
         """
-        xpath = self.content_xpath_base + "//img/@src"
-        return response.xpath(xpath).getall()
+        xpath = self.content_xpath_base + "//a[contains(@href, '/photo')]/@href"
+        links = response.xpath(xpath).getall()
+        if len(links) == 1:
+            return [
+                int(re.sub(r"^/photo\.php\?fbid=(\d+)&id=\d+&.*", "\\1", link))
+                for link in links
+            ]
+        return [
+            int(re.sub(r"/photos/viewer/.*&photo=(\d+)&profileid=.*", "\\1", link))
+            for link in links
+            if link.startswith("/photos/viewer/")
+        ]
 
     def parse_comments(self, response) -> list:
         """Parse comment elements in current story page
-        
+
         Args:
             response (scrapy.http.response.Response): HTTP response object
-        
+
         Returns:
             list: List of comment elements
-        
+
         Raises:
             ValueError: Description
         """
@@ -84,10 +95,10 @@ class StorySpider(RedisSpider):
 
     def parse_replies(self, response) -> list:
         """Parse all reply urls in current story page
-        
+
         Args:
             response (scrapy.http.response.Response): HTTP response object
-        
+
         Returns:
             list: List of story elements
         """
@@ -97,10 +108,10 @@ class StorySpider(RedisSpider):
 
     def parse_next_page(self, response) -> str:
         """Parse pagination url
-        
+
         Args:
             response (scrapy.http.response.Response): HTTP response object
-        
+
         Returns:
             str: Url that paginate to following item page
         """
@@ -109,10 +120,10 @@ class StorySpider(RedisSpider):
 
     def parse(self, response):
         """Default parsing main function, set as request callback
-        
+
         Args:
             response (scrapy.http.response.Response): HTTP Response object
-        
+
         Yields:
             scrapy.item.Item: CommentItem
         """

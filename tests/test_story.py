@@ -14,8 +14,8 @@ class StoryParse:
 
     def test_parse_content_image(self, test_args):
         response = create_response(test_args["html"])
-        iamges = self.spider.parse_content_image(response)
-        assert test_args["n_image"] == len(iamges)
+        images = self.spider.parse_content_image(response)
+        assert test_args["n_image"] == len(images)
 
     def test_parse_comments(self, test_args):
         response = create_response(test_args["html"])
