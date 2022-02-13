@@ -28,11 +28,11 @@ pip install .
 
 Crawler use redis as a job queue, you should start redis-server before crawler execution, if you don't have redis in local machine, refer to "Docker" section
 
-Program will stop until all of the posts and comments be collected, or press "Ctrl + c" to stop manually
+The program will stop until all of the posts and comments be collected, or press "Ctrl + c" to stop manually
 
-GROUP_ID "xxx" is a target facebook group id show in URL, for example 1260448967306807 in https://facebook.com/groups/1260448967306807
+GROUP_ID "xxx" is a target facebook group id shown in URL, for example, 1260448967306807 in https://facebook.com/groups/1260448967306807
 
-Data will be save as json file into "data" folder
+Data will be saved as json file into "data" folder
 
 Notice that the group must be public
 
@@ -58,6 +58,10 @@ python -m fb_group.run GROUP_ID=xxx
 
 fb_group_crawler GROUP_ID=xxx
 ```
+
+Warning, Request interval is set to five seconds per page, in order to prevent banned by facebook
+
+If your want to increase the request frequency, using high anonymous VPN or proxy is recommended
 
 ## Docker
 

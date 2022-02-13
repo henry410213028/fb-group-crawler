@@ -22,4 +22,4 @@ make test
 
 ## Testcase
 
-`tests/__init__.py`
+All the test case has been listed in TESTCASE_FILENAMES variable in `tests/__init__.py`
